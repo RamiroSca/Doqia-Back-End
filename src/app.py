@@ -8,7 +8,7 @@ from flask_swagger import swagger
 from flask_cors import CORS
 from utils import APIException, generate_sitemap
 from admin import setup_admin
-from models import db, User
+from models import db, User, UserImage, Service, Comment, Reservation, SavedService, Familiar
 #from models import Person
 
 app = Flask(__name__)
@@ -49,3 +49,18 @@ def handle_hello():
 if __name__ == '__main__':
     PORT = int(os.environ.get('PORT', 3000))
     app.run(host='0.0.0.0', port=PORT, debug=False)
+
+@app.route('/users', methods=['GET'])
+def get_all_users():
+    all_users = User.query.all()
+    map_users = list(map(lambda item: item.serialize(), all_users ))
+
+    if all_users == []:
+        return {"msg":"No hay usuarios creados"}, 404
+
+    response_body = {
+        "msg": "Usuarios creados: ",
+        "Users" : map_users
+    }
+
+    return jsonify(response_body), 200
